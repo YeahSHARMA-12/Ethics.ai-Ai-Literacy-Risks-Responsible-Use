@@ -1746,16 +1746,14 @@ function initFirebase() {
 }
 
 // 🔥 LOGIN BUTTON
+  firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 function handleLogin() {
-  if (!auth) {
-    console.error("Auth is not ready yet.");
-    return;
-  }
-
   const provider = new firebase.auth.GoogleAuthProvider();
-  auth.signInWithPopup(provider).catch((error) => {
-    console.error("Login failed:", error);
-  });
+
+  firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+    .then(() => {
+      return firebase.auth().signInWithRedirect(provider);
+    });
 }
 
 // 🔥 FIREBASE HELPERS
