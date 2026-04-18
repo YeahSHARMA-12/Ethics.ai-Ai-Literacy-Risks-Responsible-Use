@@ -9,8 +9,8 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
 
-<title>Ethics.Ai — Daily AI Ethics Habit System</title>
-<meta name="description" content="Daily AI ethics habit system. Complete scenario missions, build a streak, and unlock a certificate.">
+<title>Ethics.Ai — AI Literacy: Risks & Responsible Use</title>
+<meta name="description" content="Free AI ethics course for everyday people. Learn, practice, and get certified.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
@@ -49,26 +49,6 @@ nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.92);backdrop
 .xp-pill:hover{border-color:var(--purple);box-shadow:0 2px 8px rgba(124,58,237,0.2);}
 .nav-cta{background:var(--accent);color:#fff;padding:8px 18px;border-radius:8px;font-weight:600;font-size:0.82rem;text-decoration:none;transition:background 0.15s;white-space:nowrap;}
 .nav-cta:hover{background:var(--accent-dark);}
-.admin-pill{background:linear-gradient(135deg,var(--text),#3b2f28);color:#fff;border:1px solid rgba(255,255,255,0.12);padding:8px 14px;border-radius:8px;font-weight:700;font-size:0.82rem;cursor:pointer;white-space:nowrap;transition:transform 0.15s,opacity 0.15s;}
-.admin-pill:hover{transform:translateY(-1px);opacity:0.95;}
-.admin-pill.active{background:var(--green);border-color:#A7F3D0;}
-.admin-panel{position:fixed;inset:0;z-index:650;background:rgba(26,23,20,0.62);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity 0.22s;}
-.admin-panel.open{opacity:1;pointer-events:auto;}
-.admin-panel-card{width:100%;max-width:420px;background:var(--surface);border:1px solid var(--border);border-radius:20px;box-shadow:var(--shadow-xl);overflow:hidden;transform:translateY(16px);transition:transform 0.22s;}
-.admin-panel.open .admin-panel-card{transform:translateY(0);}
-.admin-panel-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--border);}
-.admin-panel-title{font-size:1rem;font-weight:800;color:var(--text);}
-.admin-close{width:32px;height:32px;border-radius:8px;border:1px solid var(--border);background:var(--bg);cursor:pointer;font-size:1rem;color:var(--muted);}
-.admin-panel-body{padding:20px;display:flex;flex-direction:column;gap:12px;}
-.admin-switch{display:flex;align-items:center;gap:12px;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:12px 14px;cursor:pointer;}
-.admin-switch input{width:18px;height:18px;accent-color:var(--accent);}
-.admin-switch strong{display:block;font-size:0.88rem;color:var(--text);margin-bottom:2px;}
-.admin-switch span{display:block;font-size:0.75rem;color:var(--muted);line-height:1.4;}
-.admin-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.admin-action{border:none;border-radius:10px;padding:10px 12px;font-weight:700;font-family:var(--font);cursor:pointer;font-size:0.8rem;}
-.admin-action.primary{background:var(--accent);color:#fff;}
-.admin-action.secondary{background:var(--bg);color:var(--text);border:1px solid var(--border);}
-.admin-note{font-size:0.75rem;color:var(--muted);line-height:1.5;background:var(--bg);border:1px dashed var(--border);border-radius:10px;padding:10px 12px;}
 .hamburger{display:none;background:none;border:none;cursor:pointer;padding:8px;}
 .hamburger span{display:block;width:20px;height:1.5px;background:var(--text);margin:4px 0;border-radius:2px;}
 .mobile-menu{display:none;background:var(--surface);border-bottom:1px solid var(--border);padding:16px 5%;flex-direction:column;gap:2px;}
@@ -541,6 +521,101 @@ footer{background:var(--text);padding:48px 5% 28px;}
   </div>
 </div>
 
+<script>
+  // 🔥 Firebase Init (REQUIRED)
+const firebaseConfig = {
+  apiKey: "AIzaSyCf3bplc1YK-gOwLQf-zhI364WHS2UYayY",
+
+  authDomain: "ethics-ai-bbf06.firebaseapp.com",
+
+  projectId: "ethics-ai-bbf06",
+
+};
+
+firebase.initializeApp(firebaseConfig);
+
+
+function initAppAfterLogin() {
+  console.log("initAppAfterLogin called");
+
+  // clear old conflicting data
+  localStorage.removeItem("ethics_state");
+
+  if (!window.state) {
+  window.state = {
+    xp: window.userState?.xp || 0,
+    streak: window.userState?.streak || 1,
+
+    // 🔥 REQUIRED FOR UI
+    modules: [
+      {
+        id: 1,
+        title: "AI Bias",
+        keywords: ["bias", "fairness", "data"],
+        progress: 0
+      },
+      {
+        id: 2,
+        title: "Privacy",
+        keywords: ["privacy", "data leak"],
+        progress: 0
+      },
+      {
+        id: 3,
+        title: "Transparency",
+        keywords: ["black box", "explainability"],
+        progress: 0
+      }
+    ]
+  };
+}
+
+  // start app
+  init();
+}
+
+function handleLogin() {
+  const provider = new firebase.auth.GoogleAuthProvider();
+
+  firebase.auth().signInWithPopup(provider)
+    .then((result) => {
+
+      const user = result.user;
+
+      console.log("Logged in:", user.displayName);
+
+      // hide login
+      document.getElementById("login-screen").style.display = "none";
+
+      // show welcome
+      document.getElementById("welcome-screen").style.display = "flex";
+
+      document.getElementById("welcome-text").innerText =
+        "Welcome, " + user.displayName;
+
+      setTimeout(() => {
+
+        console.log("Calling initAppAfterLogin...");
+
+        // hide welcome
+        document.getElementById("welcome-screen").style.display = "none";
+
+        // show app
+        document.getElementById("app-content").style.display = "block";
+
+        // 🔥 CALL FUNCTION (NOT DEFINE)
+        initAppAfterLogin();
+
+      }, 1200);
+
+    })
+    .catch((error) => {
+      console.error("Login error:", error);
+    });
+}
+</script>   
+</div>
+
 <!-- WELCOME SCREEN -->
 <div id="welcome-screen" style="
   display:none;
@@ -582,7 +657,7 @@ footer{background:var(--text);padding:48px 5% 28px;}
     <li><a href="#principles">Principles</a></li>
     <li><a href="#learn">Learn</a></li>
     <li><a href="#practice">Practice</a></li>
-    <li><a href="#quiz">Checkpoint</a></li>
+    <li><a href="#quiz">Quiz</a></li>
     <li><a href="#cert">Certificate</a></li>
   </ul>
   <div class="nav-gamebar">
@@ -598,37 +673,12 @@ footer{background:var(--text);padding:48px 5% 28px;}
     <div class="xp-pill" onclick="toggleLevelTooltip(event)">
       ⚡ <span id="xp-num">0</span> XP
     </div>
-    <button class="admin-pill" id="admin-pill" type="button" onclick="toggleAdminPanel(event)">Admin</button>
     <a href="#learn" class="nav-cta">Start Free →</a>
   </div>
   <button class="hamburger" id="ham-btn" onclick="toggleMobile()" aria-label="Menu">
     <span></span><span></span><span></span>
   </button>
 </nav>
-
-<!-- ADMIN PANEL -->
-<div id="admin-panel" class="admin-panel" aria-hidden="true">
-  <div class="admin-panel-card" role="dialog" aria-modal="true" aria-labelledby="admin-panel-title">
-    <div class="admin-panel-head">
-      <div class="admin-panel-title" id="admin-panel-title">Admin mode</div>
-      <button class="admin-close" type="button" onclick="toggleAdminPanel(false)" aria-label="Close admin panel">×</button>
-    </div>
-    <div class="admin-panel-body">
-      <label class="admin-switch">
-        <input id="admin-mode-toggle" type="checkbox" onchange="setAdminMode(this.checked)">
-        <div>
-          <strong>Unlock all levels for testing</strong>
-          <span>Bypasses level locks, daily locks, and certificate gates locally.</span>
-        </div>
-      </label>
-      <div class="admin-actions">
-        <button class="admin-action primary" type="button" onclick="adminUnlockAllLevels()">Unlock all now</button>
-        <button class="admin-action secondary" type="button" onclick="adminResetMode()">Reset admin</button>
-      </div>
-      <div class="admin-note">This toggle stays on your device only. No Firebase changes are required.</div>
-    </div>
-  </div>
-</div>
 
 <!-- INSIGHT BANNER -->
 <div id="insight-banner">
@@ -652,13 +702,13 @@ footer{background:var(--text);padding:48px 5% 28px;}
   <div class="section-inner">
     <div class="section-head reveal">
       <div class="section-tag">Why it matters</div>
-      <h2 class="section-title">A Daily Habit for Ethical AI Use</h2>
-      <p class="section-desc">Most people use AI daily without a repeatable decision process. Ethics.Ai fills that gap.</p>
+      <h2 class="section-title">The AI Literacy Gap is Real</h2>
+      <p class="section-desc">Most people use AI daily without understanding the risks. That's the gap Ethics.Ai fills.</p>
     </div>
     <div class="stats-grid">
       <div class="stat-card reveal"><div class="stat-icon">🌍</div><div class="stat-num">1.5B+</div><div class="stat-label">AI users worldwide need ethics training</div><div class="stat-src">2026 AI Ethics Report</div></div>
       <div class="stat-card reveal"><div class="stat-icon">⚠️</div><div class="stat-num">90%</div><div class="stat-label">of AI misuse happens unknowingly</div><div class="stat-src">2026 AI Ethics Report</div></div>
-      <div class="stat-card reveal"><div class="stat-icon">🏆</div><div class="stat-num">Free</div><div class="stat-label">Complete 10 levels + 100 days → Certificate</div><div class="stat-src">Available immediately after passing</div></div>
+      <div class="stat-card reveal"><div class="stat-icon">🏆</div><div class="stat-num">Free</div><div class="stat-label">Complete course → Certificate + LinkedIn badge</div><div class="stat-src">Available immediately after passing</div></div>
     </div>
   </div>
 </section>
@@ -669,7 +719,7 @@ footer{background:var(--text);padding:48px 5% 28px;}
     <div class="section-head reveal">
       <div class="section-tag">Foundation</div>
       <h2 class="section-title">5 Core AI Ethics Principles</h2>
-      <p class="section-desc">These five pillars guide daily decisions inside the habit loop.</p>
+      <p class="section-desc">These five pillars guide every module in this course.</p>
     </div>
     <div class="principles-grid">
       <div class="principle-card reveal"><div class="p-icon">⚖️</div><div class="p-name">Fairness</div><div class="p-desc">AI must treat all people equitably, without discrimination.</div><div class="p-check"><i class="fa-solid fa-check"></i> Core Principle</div></div>
@@ -686,8 +736,8 @@ footer{background:var(--text);padding:48px 5% 28px;}
   <div class="section-inner">
     <div class="section-head reveal">
       <div class="section-tag">Course</div>
-      <h2 class="section-title">10 Levels. 100 Days. One Habit.</h2>
-      <p class="section-desc">Continue your daily mission, practice one scenario, and get guided feedback.</p>
+      <h2 class="section-title">5 Modules. Learn Your Way.</h2>
+      <p class="section-desc">Click any keyword tile to launch an interactive lesson with flashcards, real-life examples and a quick check.</p>
     </div>
     <div id="review-nudge-container"></div>
     <div class="learn-progress-wrap reveal">
@@ -704,8 +754,8 @@ footer{background:var(--text);padding:48px 5% 28px;}
   <div class="section-inner">
     <div class="section-head reveal">
       <div class="section-tag">Practice</div>
-      <h2 class="section-title">Today's Mission</h2>
-      <p class="section-desc">Complete one scenario, make one decision, and keep the streak moving.</p>
+      <h2 class="section-title">Real-World Scenarios</h2>
+      <p class="section-desc">Test your judgment on these 3 realistic AI ethics dilemmas. No time limit — think it through.</p>
     </div>
     <div class="scenarios-grid">
       <div class="scenario-card reveal">
@@ -846,7 +896,7 @@ footer{background:var(--text);padding:48px 5% 28px;}
           <li><a href="#principles">5 Principles</a></li>
           <li><a href="#learn">5 Modules</a></li>
           <li><a href="#practice">Scenarios</a></li>
-          <li><a href="#quiz">Checkpoint</a></li>
+          <li><a href="#quiz">Quiz</a></li>
           <li><a href="#cert">Certificate</a></li>
         </ul>
       </div>
@@ -1024,91 +1074,24 @@ function getDiagram(id) {
   return D[id] || '<div style="padding:20px;text-align:center;color:var(--muted)">Diagram loading…</div>';
 }
 
-
 // ═══════════════════════════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════════════════════════
 const SK = 'ethicsai_v3';
+let state = {
+  kw:{}, kwDates:{},       // kwDates: { kwId: timestamp }
+  modules:[],
+  quizPassed:false, quizScore:0,
+  practiceScore:0,
+  certGenerated:false, certName:'',
+  streak:0, lastActiveDate:'',
+  streakFreezeUsedWeek:'',  // ISO week string
+  xp:0,
+  loginBonusDate:''
+};
 
-function createDefaultState() {
-  return {
-    kw: {},
-    kwDates: {},
-    modules: [],
-    quizPassed: false,
-    quizScore: 0,
-    practiceScore: 0,
-    certGenerated: false,
-    certName: '',
-    streak: 0,
-    lastActiveDate: '',
-    streakFreezeUsedWeek: '',
-    xp: 0,
-    loginBonusDate: '',
-    currentDay: 1
-  };
-}
-
-function cloneState(src) {
-  return {
-    ...createDefaultState(),
-    ...src,
-    kw: { ...(src?.kw || {}) },
-    kwDates: { ...(src?.kwDates || {}) },
-    modules: Array.isArray(src?.modules) ? [...src.modules] : []
-  };
-}
-
-let state = cloneState();
-window.state = state;
-let currentUser = null;
-let saveTimer = null;
-let firebaseSyncQueued = false;
-
-function loadState() {
-  try {
-    const s = localStorage.getItem(SK);
-    if (!s) return null;
-    const parsed = JSON.parse(s);
-    return parsed && typeof parsed === 'object' ? cloneState(parsed) : null;
-  } catch (e) {
-    return null;
-  }
-}
-
-function mergeState(base, patch) {
-  const b = cloneState(base);
-  const p = patch ? cloneState(patch) : cloneState();
-  return {
-    ...b,
-    ...p,
-    kw: { ...b.kw, ...p.kw },
-    kwDates: { ...b.kwDates, ...p.kwDates },
-    modules: Array.isArray(p.modules) ? [...p.modules] : [...b.modules]
-  };
-}
-
-function queueFirebaseSave() {
-  if (!currentUser || !db) return;
-  if (firebaseSyncQueued) return;
-  firebaseSyncQueued = true;
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(async () => {
-    firebaseSyncQueued = false;
-    try {
-      await db.collection('users').doc(currentUser.uid).set(cloneState(state), { merge: true });
-    } catch (e) {
-      console.error('Save error:', e);
-    }
-  }, 300);
-}
-
-function saveState() {
-  try {
-    localStorage.setItem(SK, JSON.stringify(state));
-  } catch (e) {}
-  queueFirebaseSave();
-}
+function loadState(){try{const s=localStorage.getItem(SK);if(s)state={...state,...JSON.parse(s)};}catch(e){}}
+function saveState(){try{localStorage.setItem(SK,JSON.stringify(state));}catch(e){}}
 
 // ─── STREAK & XP ───
 function todayStr(){return new Date().toISOString().slice(0,10);}
@@ -1170,7 +1153,6 @@ function updateNavXP(){
   // frozen pill if freeze used this week
   const sp=document.getElementById('streak-pill');
   sp.classList.toggle('frozen',state.streakFreezeUsedWeek===weekStr());
-  syncAdminUI();
 }
 
 let ttVisible=false;
@@ -1182,13 +1164,10 @@ function toggleLevelTooltip(e){
 }
 document.addEventListener('click',()=>{ttVisible=false;document.getElementById('level-tooltip').classList.remove('show');});
 
-
 // ─── INSIGHT OF THE DAY ───
-function setInsight() {
-  const el = document.getElementById('insight-text');
-  if (!el) return;
-  const idx = Math.floor(Date.now() / 86400000) % INSIGHTS.length;
-  el.innerHTML = INSIGHTS[idx];
+function setInsight(){
+  const idx=Math.floor(Date.now()/86400000)%INSIGHTS.length;
+  document.getElementById('insight-text').innerHTML=INSIGHTS[idx];
 }
 
 // ─── HERO (first-time vs returning) ───
@@ -1636,44 +1615,36 @@ function toast(msg,dur=2200){const t=document.getElementById('toast');t.textCont
 const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:0.08,rootMargin:'0px 0px -20px 0px'});
 document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.classList.contains('module-header')){e.preventDefault();e.target.click();}});
 
-
 // ═══════════════════════════════════════════════════════════════
 // FIREBASE CONFIGURATION & INITIALIZATION
 // ═══════════════════════════════════════════════════════════════
 const firebaseConfig = {
+
   apiKey: "AIzaSyCf3bplc1YK-gOwLQf-zhI364WHS2UYayY",
+
   authDomain: "ethics-ai-bbf06.firebaseapp.com",
+
   projectId: "ethics-ai-bbf06",
+
   storageBucket: "ethics-ai-bbf06.firebasestorage.app",
+
   messagingSenderId: "880590955666",
-  appId: "1:880590955666:web:3e2845456404b938dcf24b"
+
+  appId: "1:880590955666:web:3e2845456404b938dcf24b",
+
+ 
+
 };
 
+
+// Initialize Firebase
 let firebaseApp = null;
 let auth = null;
 let db = null;
-let authListenerAttached = false;
-let firebaseBooted = false;
-
-function normalizeRemoteState(userData) {
-  const localCache = loadState();
-  const remote = userData && typeof userData === 'object' ? cloneState(userData) : null;
-  if (remote && localCache) {
-    return mergeState(localCache, remote);
-  }
-  if (remote) return remote;
-  if (localCache) return localCache;
-  return cloneState();
-}
 
 // 🔥 INIT FIREBASE ONCE
 function initFirebase() {
   try {
-    if (!window.firebase || typeof firebase.initializeApp !== "function") {
-      console.error("Firebase SDK missing.");
-      return;
-    }
-
     if (!firebase.apps.length) {
       firebaseApp = firebase.initializeApp(firebaseConfig);
     } else {
@@ -1685,81 +1656,84 @@ function initFirebase() {
 
     auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
-    if (authListenerAttached) return;
-    authListenerAttached = true;
-
+    // 🔥 AUTH STATE LISTENER (ONLY ONCE)
     auth.onAuthStateChanged(async (user) => {
-      if (!user) {
-        currentUser = null;
-        return;
-      }
+      if (!user) return;
 
-      currentUser = user;
       window.currentUser = user;
 
       const name = user.displayName?.split(" ")[0] || "User";
 
+      // SHOW WELCOME
       const login = document.getElementById("login-screen");
       const welcome = document.getElementById("welcome-screen");
-      const app = document.getElementById("app-content");
-      const txt = document.getElementById("welcome-text");
 
       if (login) login.style.display = "none";
       if (welcome) {
         welcome.style.display = "flex";
+        const txt = document.getElementById("welcome-text");
         if (txt) txt.textContent = "Welcome, " + name + " 👋";
       }
-      if (app) app.style.display = "none";
 
-      let remoteData = null;
-      try {
-        remoteData = await getUserData(user.uid);
-      } catch (error) {
-        console.error("Fetch error:", error);
-      }
-
-      state = normalizeRemoteState(remoteData);
-      state.currentDay = state.currentDay || 1;
-      window.state = state;
-      window.userState = state;
-
-      if (!remoteData) {
-        try {
-          await saveUserData(user.uid, cloneState(state));
-        } catch (error) {
-          console.error("Initial save error:", error);
-        }
-      }
-
+      // TRANSITION
       setTimeout(async () => {
+
         if (welcome) welcome.style.display = "none";
+
+        const app = document.getElementById("app-content");
         if (app) app.style.display = "block";
+
+        // 🔥 LOAD USER DATA
+        let userData = await getUserData(user.uid);
+
+        if (!userData) {
+          userData = {
+            xp: 0,
+            streak: 1,
+            currentDay: 1,
+            lastActiveDate: new Date().toISOString()
+          };
+          await saveUserData(user.uid, userData);
+        }
+
+        window.userState = userData;
+
+        // UPDATE NAV UI
+        const xpEl = document.getElementById("xp-num");
+        const streakEl = document.getElementById("streak-num");
+
+        if (xpEl) xpEl.textContent = userData.xp;
+        if (streakEl) streakEl.textContent = userData.streak;
+
+        // 🔥 START APP
         initAppAfterLogin();
+
       }, 1200);
     });
 
-    firebaseBooted = true;
     console.log("Firebase initialized successfully");
+
   } catch (error) {
     console.error("Firebase initialization error:", error);
   }
 }
 
-// 🔥 LOGIN BUTTON
-  firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-function handleLogin() {
-  const provider = new firebase.auth.GoogleAuthProvider();
 
-  firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-    .then(() => {
-      return firebase.auth().signInWithRedirect(provider);
-    });
-}
+// 🔥 LOGIN BUTTON
+window.handleLogin = async function () {
+  try {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    await auth.signInWithPopup(provider);
+  } catch (error) {
+    console.error("Login failed:", error);
+  }
+};
+
 
 // 🔥 FIREBASE HELPERS
 async function saveUserData(userId, userData) {
   try {
-    await db.collection("users").doc(userId).set(cloneState(userData), { merge: true });
+    await db.collection("users").doc(userId).set(userData, { merge: true });
   } catch (error) {
     console.error("Save error:", error);
   }
@@ -1775,31 +1749,44 @@ async function getUserData(userId) {
   }
 }
 
+
 // 🔥 MAIN INIT AFTER LOGIN
 function initAppAfterLogin() {
-  if (!window.state) window.state = state;
-  if (!window.userState) window.userState = state;
 
-  state = cloneState(window.state || window.userState || state);
-  window.state = state;
-  window.userState = state;
+  if (!window.state) window.state = {};
+  if (!window.userState) return;
 
-  if (typeof setInsight === "function") setInsight();
+  // Sync Firebase → UI state
+  state.xp = userState.xp || 0;
+  state.streak = userState.streak || 1;
+  state.currentDay = userState.currentDay || 1;
 
+  // Insight (safe)
+  if (typeof dailyChallenges !== "undefined") {
+    const day = state.currentDay - 1;
+    const challenge = dailyChallenges?.[day];
+
+    const el = document.getElementById("insight-text");
+    if (el && challenge) {
+      el.textContent = challenge.insight;
+    }
+  }
+
+  // Run app
   init();
 
+  // Sync UI
   if (typeof updateNavXP === "function") updateNavXP();
   if (typeof updateStreak === "function") updateStreak();
 }
+
 
 // 🔥 CORE INIT (SAFE VERSION)
 function init() {
   console.log("INIT RUNNING");
 
-  try { setInsight(); } catch(e){}
   try { renderHero(); } catch(e){}
   try { renderModules(); } catch(e){}
-  try { updateStreak(); } catch(e){}
   try { updateOverallProgress(); } catch(e){}
   try { updateCertRequirements(); } catch(e){}
   try { renderQuiz(); } catch(e){}
@@ -1834,1197 +1821,11 @@ function init() {
   }
 }
 
+
 // 🔥 START FIREBASE
 initFirebase();
 </script>
 </div> <!-- END app-content -->
-<script>
-(() => {
-  const LOCAL_TZ_DATE = () => {
-    const d = new Date();
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${y}-${m}-${day}`;
-  };
-
-  const H10_LEVELS = [
-    { name: 'AI Curious', short: 'recognition', subtitle: 'Pause before trusting', desc: 'Notice AI in everyday tools and stop treating the first output as truth.' },
-    { name: 'Verification Builder', short: 'verification', subtitle: 'Check before you share', desc: 'Build the reflex of asking for sources and validating claims before acting.' },
-    { name: 'Bias Spotter', short: 'bias', subtitle: 'Read the pattern', desc: 'Recognize when AI systematically disadvantages people or groups.' },
-    { name: 'Privacy Protector', short: 'privacy', subtitle: 'Protect the person', desc: 'Notice when prompts, forms, or outputs expose sensitive data.' },
-    { name: 'Transparency Reader', short: 'clarity', subtitle: 'See the black box', desc: 'Demand reasons, citations, and explanations when AI affects decisions.' },
-    { name: 'Accountability Keeper', short: 'accountability', subtitle: 'Keep humans responsible', desc: 'Remember the person using the tool stays responsible for the outcome.' },
-    { name: 'Human Oversight', short: 'oversight', subtitle: 'Escalate when needed', desc: 'Know when to stop automation and involve a human reviewer.' },
-    { name: 'Secure Prompting', short: 'security', subtitle: 'Protect data in prompts', desc: 'Avoid leaking secrets, private details, or confidential instructions.' },
-    { name: 'Misinformation Defense', short: 'misinfo', subtitle: 'Slow the viral loop', desc: 'Counter deepfakes, rumors, and manipulative content with verification.' },
-    { name: 'Ethical Leader', short: 'leadership', subtitle: 'Set the standard', desc: 'Teach others, define norms, and make ethical behavior the default.' }
-  ];
-
-  const H10_SCENARIOS = [
-    {
-      tile: 'Pause',
-      icon: '🧠',
-      situation: 'an AI answer sounds polished but gives no sources',
-      question: 'What is the most responsible first move?',
-      options: [
-        'Use it immediately because it sounds confident',
-        'Pause and verify the claim with independent sources',
-        'Share it because the wording looks professional'
-      ],
-      ans: 1,
-      exp: 'Confidence is not evidence. The habit is to pause and verify before using or sharing AI output.',
-      good: 'Pause, verify, and compare sources',
-      bad: 'Trust polished output without checking'
-    },
-    {
-      tile: 'Verify',
-      icon: '🔎',
-      situation: 'a chatbot gives a factual claim in a chat thread',
-      question: 'What keeps the habit reliable?',
-      options: [
-        'Ask for evidence and cross-check before deciding',
-        'Accept it if the model says “trust me”',
-        'Repeat the claim to make it feel familiar'
-      ],
-      ans: 0,
-      exp: 'Reliable use means checking sources, not just reading persuasive wording.',
-      good: 'Ask for sources and cross-check them',
-      bad: 'Repeat the claim without verification'
-    },
-    {
-      tile: 'Bias',
-      icon: '⚖️',
-      situation: 'an AI hiring tool rejects one group far more often than others',
-      question: 'What is the strongest ethical signal?',
-      options: [
-        'The tool is probably objective because it is automated',
-        'The system may be encoding historical bias into decisions',
-        'The rejected group is automatically less qualified'
-      ],
-      ans: 1,
-      exp: 'Automation can amplify old inequalities. Uneven rejection patterns usually demand a bias review.',
-      good: 'Investigate bias and review the training data',
-      bad: 'Assume the machine is automatically fair'
-    },
-    {
-      tile: 'Privacy',
-      icon: '🔒',
-      situation: 'an app asks for sensitive personal data to “improve” AI performance',
-      question: 'What should you check first?',
-      options: [
-        'Whether the data is necessary, consented, and minimized',
-        'Whether the app has a colorful interface',
-        'Whether the request is hidden in small text'
-      ],
-      ans: 0,
-      exp: 'Privacy starts with necessity and consent. Collect less, disclose more, and protect the user.',
-      good: 'Confirm necessity and consent before sharing data',
-      bad: 'Hand over sensitive data without checking'
-    },
-    {
-      tile: 'Clarity',
-      icon: '👁️',
-      situation: 'a model makes a decision but cannot explain why',
-      question: 'What is the safest habit?',
-      options: [
-        'Use it anyway because the answer looks advanced',
-        'Request a human explanation or a more transparent system',
-        'Ignore the lack of explanation if the score is high'
-      ],
-      ans: 1,
-      exp: 'If a decision matters, explanation matters too. Transparency is part of responsible use.',
-      good: 'Request explanation or human review',
-      bad: 'Accept opaque decisions without questions'
-    },
-    {
-      tile: 'Accountability',
-      icon: '🎯',
-      situation: 'a teammate says the AI made the mistake, so nobody is responsible',
-      question: 'What is the correct response?',
-      options: [
-        'Let the AI absorb the blame',
-        'Make it clear that humans remain accountable for the outcome',
-        'Avoid discussing it so the issue disappears'
-      ],
-      ans: 1,
-      exp: 'Responsibility does not disappear because a tool was involved. Accountability stays with the human team.',
-      good: 'Keep humans accountable',
-      bad: 'Shift blame to the tool'
-    },
-    {
-      tile: 'Oversight',
-      icon: '🧭',
-      situation: 'a workflow becomes fully automated and no one checks the output',
-      question: 'What habit should you build?',
-      options: [
-        'Add a human review checkpoint before release',
-        'Remove oversight because automation is faster',
-        'Only check when something breaks publicly'
-      ],
-      ans: 0,
-      exp: 'High-impact systems need a human in the loop, especially when decisions affect people.',
-      good: 'Add human oversight before release',
-      bad: 'Remove review because automation is fast'
-    },
-    {
-      tile: 'Security',
-      icon: '🛡️',
-      situation: 'someone pastes confidential data into a prompt to get a faster answer',
-      question: 'What should the user do?',
-      options: [
-        'Strip sensitive data, anonymize it, or avoid sending it',
-        'Paste everything because the model is private',
-        'Add more details so the model can learn faster'
-      ],
-      ans: 0,
-      exp: 'Prompt security is data discipline. Do not leak secrets, personal data, or confidential instructions.',
-      good: 'Redact or avoid sensitive data',
-      bad: 'Paste secrets into the prompt'
-    },
-    {
-      tile: 'Misinformation',
-      icon: '📵',
-      situation: 'a deepfake spreads quickly inside a group chat',
-      question: 'What is the most responsible response?',
-      options: [
-        'Forward it to warn everyone',
-        'Verify it, then slow the spread if it is fake',
-        'Assume everyone will notice the fake on their own'
-      ],
-      ans: 1,
-      exp: 'Misinformation grows when people share first and think later. Verification slows the loop.',
-      good: 'Verify first and slow the spread',
-      bad: 'Forward the content immediately'
-    },
-    {
-      tile: 'Leadership',
-      icon: '🏁',
-      situation: 'your team needs a rule for when AI can and cannot be used',
-      question: 'What should you build?',
-      options: [
-        'A clear policy with examples, review steps, and escalation paths',
-        'A vague rule that nobody will remember',
-        'No rule at all because habits should be left informal'
-      ],
-      ans: 0,
-      exp: 'Ethical leadership turns good intentions into repeatable standards that others can follow.',
-      good: 'Build a clear policy with review steps',
-      bad: 'Leave the rules vague and inconsistent'
-    }
-  ];
-
-  const HABIT_MODULES = H10_LEVELS.map((level, i) => ({
-    id: i + 1,
-    title: `Level ${i + 1} · ${level.name}`,
-    meta: `${level.subtitle} · 10 scenario drills`,
-    desc: level.desc,
-    ability: level.desc,
-    keywords: H10_SCENARIOS.map((scenario, j) => ({
-      id: `${i + 1}-${j + 1}`,
-      label: `${scenario.tile} · ${level.short}`,
-      icon: scenario.icon
-    }))
-  }));
-
-  const COURSE_NAME = 'Ethics.Ai Habit System';
-  const SKILL_MAX = 10;
-  const CHALLENGE_MAX = 100;
-  const XP_VALUES = { scenario: 12, module: 60, quiz: 50, login: 10, review: 4 };
-
-  function hashDate(dateStr) {
-    let h = 0;
-    for (let i = 0; i < dateStr.length; i++) {
-      h = ((h << 5) - h) + dateStr.charCodeAt(i);
-      h |= 0;
-    }
-    return Math.abs(h);
-  }
-
-  function safeQS(sel) { return document.querySelector(sel); }
-  function safeQSA(sel) { return Array.from(document.querySelectorAll(sel)); }
-  function setText(sel, text) { const el = typeof sel === 'string' ? safeQS(sel) : sel; if (el) el.textContent = text; }
-  function setHTML(sel, html) { const el = typeof sel === 'string' ? safeQS(sel) : sel; if (el) el.innerHTML = html; }
-
-  function isAdminMode() {
-    return !!(state && state.adminMode) || localStorage.getItem('ethicsai_admin_mode') === '1';
-  }
-
-  function syncAdminUI() {
-    const pill = document.getElementById('admin-pill');
-    if (pill) pill.classList.toggle('active', isAdminMode());
-    const toggle = document.getElementById('admin-mode-toggle');
-    if (toggle) toggle.checked = isAdminMode();
-  }
-
-  function openAdminPanel() {
-    const panel = document.getElementById('admin-panel');
-    if (panel) { panel.classList.add('open'); panel.setAttribute('aria-hidden', 'false'); }
-    syncAdminUI();
-  }
-
-  function closeAdminPanel() {
-    const panel = document.getElementById('admin-panel');
-    if (panel) { panel.classList.remove('open'); panel.setAttribute('aria-hidden', 'true'); }
-  }
-
-  function applyAdminModeState() {
-    if (!state) return;
-    state.adminMode = isAdminMode();
-    if (state.adminMode) {
-      state.currentLevel = SKILL_MAX;
-      state.certificateUnlocked = true;
-    } else {
-      state.certificateUnlocked = isCertificateUnlocked();
-    }
-  }
-
-  window.createDefaultState = function createDefaultState() {
-    return {
-      kw: {},
-      kwDates: {},
-      modules: [],
-      completedLevels: [],
-      moduleProgress: {},
-      levelProgress: 0,
-      currentLevel: 1,
-      dailyChallengeDay: 1,
-      completedDays: 0,
-      insightOfTheDay: '',
-      insightDate: '',
-      certificateUnlocked: false,
-      quizPassed: false,
-      quizScore: 0,
-      practiceScore: 0,
-      certGenerated: false,
-      certName: '',
-      adminMode: false,
-      streak: 0,
-      lastActiveDate: '',
-      lastDailyClaimDate: '',
-      streakFreezeUsedWeek: '',
-      xp: 0,
-      loginBonusDate: '',
-      currentDay: 1
-    };
-  };
-
-  window.cloneState = function cloneState(src) {
-    const base = window.createDefaultState();
-    const incoming = src && typeof src === 'object' ? src : {};
-    const completedLevels = Array.isArray(incoming.completedLevels)
-      ? incoming.completedLevels
-      : Array.isArray(incoming.modules)
-        ? incoming.modules
-        : [];
-
-    const merged = {
-      ...base,
-      ...incoming,
-      kw: { ...(incoming.kw || {}) },
-      kwDates: { ...(incoming.kwDates || {}) },
-      moduleProgress: { ...(incoming.moduleProgress || {}) },
-      completedLevels: [...new Set(completedLevels)].sort((a, b) => a - b),
-      modules: [...new Set(completedLevels)].sort((a, b) => a - b)
-    };
-
-    if (!merged.currentLevel) merged.currentLevel = Math.min(SKILL_MAX, merged.completedLevels.length + 1);
-    if (!merged.dailyChallengeDay) merged.dailyChallengeDay = Math.min(CHALLENGE_MAX, merged.completedDays || 1);
-    if (!merged.completedDays && merged.dailyChallengeDay) merged.completedDays = merged.dailyChallengeDay;
-    if (!merged.insightDate && merged.insightOfTheDay) merged.insightDate = LOCAL_TZ_DATE();
-    merged.adminMode = !!merged.adminMode || localStorage.getItem('ethicsai_admin_mode') === '1';
-    return merged;
-  };
-
-  window.normalizeRemoteState = function normalizeRemoteState(userData) {
-    const localCache = (() => {
-      try {
-        const s = localStorage.getItem('ethicsai_v3');
-        return s ? JSON.parse(s) : null;
-      } catch (_) {
-        return null;
-      }
-    })();
-
-    const remote = userData && typeof userData === 'object' ? userData : null;
-    const merged = window.cloneState(remote || localCache || undefined);
-    if (localCache && remote) {
-      const local = window.cloneState(localCache);
-      merged.kw = { ...local.kw, ...merged.kw };
-      merged.kwDates = { ...local.kwDates, ...merged.kwDates };
-      merged.moduleProgress = { ...local.moduleProgress, ...merged.moduleProgress };
-      merged.completedLevels = [...new Set([...(local.completedLevels || []), ...(merged.completedLevels || [])])].sort((a, b) => a - b);
-      merged.modules = [...merged.completedLevels];
-    }
-    return merged;
-  };
-
-  function getUnlockedLevel() {
-    if (isAdminMode()) return SKILL_MAX;
-    const completed = Array.isArray(state.completedLevels) ? state.completedLevels.length : 0;
-    return Math.min(SKILL_MAX, Math.max(1, state.currentLevel || (completed + 1)));
-  }
-
-  function syncHierarchy() {
-    state = window.cloneState(state);
-    const completed = [...new Set([...(state.completedLevels || []), ...(state.modules || [])])].filter(Boolean).sort((a, b) => a - b);
-    state.completedLevels = completed;
-    state.modules = [...completed];
-    state.currentLevel = isAdminMode() ? SKILL_MAX : Math.min(SKILL_MAX, completed.length + 1);
-    state.levelProgress = isAdminMode() ? 1 : (getModProgress(state.currentLevel) / SKILL_MAX);
-    state.moduleProgress = state.moduleProgress || {};
-    state.insightOfTheDay = state.insightOfTheDay || '';
-    state.adminMode = isAdminMode();
-    state.certificateUnlocked = state.adminMode || isCertificateUnlocked();
-    window.state = state;
-    window.userState = state;
-    syncAdminUI();
-  }
-
-  function buildLessonFromKwId(kwId) {
-    const parts = String(kwId).split('-').map(n => parseInt(n, 10));
-    const mid = parts[0] || 1;
-    const idx = parts[1] || 1;
-    const level = H10_LEVELS[mid - 1] || H10_LEVELS[0];
-    const scenario = H10_SCENARIOS[idx - 1] || H10_SCENARIOS[0];
-    return {
-      mid,
-      idx,
-      level,
-      scenario,
-      breadcrumb: `Level ${mid} · ${level.name}`,
-      flashcard: {
-        emoji: scenario.icon,
-        question: `When ${scenario.tile.toLowerCase()} becomes the default, what habit keeps you safe?`,
-        backTitle: `Habit for ${level.name}`,
-        backText: level.desc
-      },
-      example: `In <strong>${level.name}</strong>, ${scenario.situation}. The safer habit is to slow down, check the facts, and choose deliberately.`,
-      doText: scenario.good,
-      dontText: scenario.bad,
-      check: {
-        q: scenario.question,
-        opts: scenario.options,
-        ans: scenario.ans,
-        exp: scenario.exp
-      }
-    };
-  }
-
-  window.saveState = function saveState() {
-    syncHierarchy();
-    try {
-      localStorage.setItem('ethicsai_v3', JSON.stringify(state));
-    } catch (_) {}
-    if (typeof queueFirebaseSave === 'function') queueFirebaseSave();
-  };
-
-  window.todayStr = function todayStr() { return LOCAL_TZ_DATE(); };
-  window.weekStr = function weekStr() {
-    const d = new Date();
-    const first = new Date(d.getFullYear(), 0, 1);
-    const week = Math.ceil((((d - first) / 86400000) + first.getDay() + 1) / 7);
-    return `${d.getFullYear()}-W${week}`;
-  };
-
-  function markDailyProgress() {
-    const today = LOCAL_TZ_DATE();
-    const yesterday = (() => {
-      const d = new Date();
-      d.setDate(d.getDate() - 1);
-      const y = d.getFullYear();
-      const m = String(d.getMonth() + 1).padStart(2, '0');
-      const day = String(d.getDate()).padStart(2, '0');
-      return `${y}-${m}-${day}`;
-    })();
-
-    if (state.lastActiveDate === today) {
-      return;
-    }
-
-    if (state.lastActiveDate === yesterday) {
-      state.streak = (state.streak || 0) + 1;
-    } else if (!state.lastActiveDate) {
-      state.streak = Math.max(1, state.streak || 1);
-    } else {
-      state.streak = 1;
-    }
-
-    state.lastActiveDate = today;
-
-    if (state.lastDailyClaimDate !== today) {
-      state.lastDailyClaimDate = today;
-      state.completedDays = Math.min(CHALLENGE_MAX, (state.completedDays || 0) + 1);
-      state.dailyChallengeDay = Math.min(CHALLENGE_MAX, state.completedDays || 1);
-      if (state.loginBonusDate !== today) {
-        state.loginBonusDate = today;
-        addXP(XP_VALUES.login, 'daily check-in');
-      }
-    }
-
-    saveState();
-  }
-
-  window.updateStreak = function updateStreak() {
-    syncHierarchy();
-    markDailyProgress();
-    updateNavXP();
-    updateCertRequirements();
-  };
-
-  window.addXP = function addXP(amount, reason = '') {
-    state.xp = (state.xp || 0) + amount;
-    syncHierarchy();
-    try { localStorage.setItem('ethicsai_v3', JSON.stringify(state)); } catch (_) {}
-    if (typeof queueFirebaseSave === 'function') queueFirebaseSave();
-    updateNavXP();
-    const msg = `+${amount} XP${reason ? ` · ${reason}` : ''}`;
-    const el = document.createElement('div');
-    el.className = 'xp-float';
-    el.textContent = '⚡ ' + msg;
-    document.body.appendChild(el);
-    setTimeout(() => el.remove(), 2800);
-  };
-
-  window.setInsight = function setInsight() {
-    const el = document.getElementById('insight-text');
-    if (!el) return;
-    const today = LOCAL_TZ_DATE();
-    const dailyIdx = hashDate(today) % INSIGHTS.length;
-    if (!state.insightOfTheDay || state.insightDate !== today) {
-      state.insightOfTheDay = INSIGHTS[dailyIdx];
-      state.insightDate = today;
-      saveState();
-    }
-    el.innerHTML = state.insightOfTheDay;
-  };
-
-  function getCurrentModuleProgress(mid) {
-    const mod = HABIT_MODULES.find(m => m.id === mid);
-    if (!mod) return 0;
-    return mod.keywords.filter(k => getKwSteps(k.id) >= 3).length;
-  }
-
-  window.getKwSteps = function getKwSteps(id) { return state.kw?.[id] || 0; };
-  window.setKwSteps = function setKwSteps(id, n) { state.kw[id] = n; saveState(); };
-  window.isKwDone = function isKwDone(id) { return getKwSteps(id) >= 3; };
-  window.getModProgress = function getModProgress(mid) { return getCurrentModuleProgress(mid); };
-  window.isModDone = function isModDone(mid) { return getModProgress(mid) >= SKILL_MAX; };
-
-  window.getReviewDueKeywords = function getReviewDueKeywords() {
-    const now = Date.now();
-    const due = [];
-    for (const kwId in state.kwDates || {}) {
-      if (isKwDone(kwId) && (now - state.kwDates[kwId]) >= REVIEW_INTERVAL_MS) {
-        due.push(kwId);
-      }
-    }
-    return due;
-  };
-
-  window.renderReviewNudge = function renderReviewNudge() {
-    const container = document.getElementById('review-nudge-container');
-    if (!container) return;
-    const due = getReviewDueKeywords();
-    if (due.length === 0) {
-      container.innerHTML = '';
-      return;
-    }
-    container.innerHTML = `
-      <div class="review-nudge reveal">
-        <div class="review-nudge-icon">📚</div>
-        <div class="review-nudge-text">
-          <div class="rnt-title">${due.length} scenario${due.length > 1 ? 's' : ''} ready for review</div>
-          <div class="rnt-sub">Revisiting at the right interval turns a one-time lesson into a habit.</div>
-        </div>
-        <button class="btn-review" onclick="openReview()"><i class="fa-solid fa-brain"></i> Start Review</button>
-      </div>`;
-  };
-
-  window.openReview = function openReview() {
-    reviewQueue = getReviewDueKeywords();
-    reviewIdx = 0;
-    if (reviewQueue.length === 0) { toast('No reviews due right now!'); return; }
-    renderReviewQuestion();
-    document.getElementById('review-overlay').classList.add('open');
-    document.body.style.overflow = 'hidden';
-  };
-
-  window.closeReview = function closeReview() {
-    document.getElementById('review-overlay').classList.remove('open');
-    document.body.style.overflow = '';
-    renderReviewNudge();
-  };
-
-  window.handleReviewOverlayClick = function handleReviewOverlayClick(e) {
-    if (e.target === document.getElementById('review-overlay')) closeReview();
-  };
-
-  window.renderReviewQuestion = function renderReviewQuestion() {
-    const kwId = reviewQueue[reviewIdx];
-    const lesson = buildLessonFromKwId(kwId);
-    const letters = ['A', 'B', 'C'];
-    reviewAnswered = false;
-    const body = document.getElementById('review-body');
-    const of = document.getElementById('review-of');
-    const next = document.getElementById('review-next-btn');
-    if (!body || !of || !next) return;
-    of.textContent = `Scenario ${reviewIdx + 1} of ${reviewQueue.length}`;
-    next.textContent = reviewIdx < reviewQueue.length - 1 ? 'Next →' : 'Done';
-    next.disabled = true;
-    body.innerHTML = `
-      <div class="review-q">${lesson.check.q}</div>
-      <div class="review-opts" id="review-opts"></div>
-      <div class="review-fb" id="review-fb"></div>`;
-    const opts = document.getElementById('review-opts');
-    lesson.check.opts.forEach((opt, i) => {
-      const btn = document.createElement('button');
-      btn.className = 'review-opt';
-      btn.innerHTML = `<span class="qo-letter">${letters[i]}</span>${opt}`;
-      btn.onclick = () => selectReviewAnswer(i);
-      opts.appendChild(btn);
-    });
-    function selectReviewAnswer(idx) {
-      if (reviewAnswered) return;
-      const isCorrect = idx === lesson.check.ans;
-      const buttons = opts.querySelectorAll('.review-opt');
-      buttons.forEach((btn, i) => {
-        if (i === lesson.check.ans) btn.classList.add('correct');
-        if (i === idx && !isCorrect) btn.classList.add('wrong');
-        if (isCorrect) btn.disabled = true;
-      });
-      const fb = document.getElementById('review-fb');
-      fb.className = 'review-fb show ' + (isCorrect ? 'ok' : 'bad');
-      fb.textContent = isCorrect ? lesson.check.exp : 'Not quite. Review the safer pattern and try again.';
-      reviewAnswered = isCorrect;
-      next.disabled = !isCorrect;
-      if (isCorrect) {
-        state.kwDates[kwId] = Date.now();
-        addXP(XP_VALUES.review, 'review completed');
-        saveState();
-      }
-    }
-    window.selectReviewAnswer = selectReviewAnswer;
-  };
-
-  window.reviewNext = function reviewNext() {
-    if (!reviewAnswered) { toast('Choose the safest option first.'); return; }
-    if (reviewIdx < reviewQueue.length - 1) {
-      reviewIdx += 1;
-      renderReviewQuestion();
-    } else {
-      closeReview();
-      toast('📚 Review session complete');
-    }
-  };
-
-  window.updateNavXP = function updateNavXP() {
-    syncHierarchy();
-    const currentLevel = getUnlockedLevel();
-    const currentLevelData = H10_LEVELS[currentLevel - 1] || H10_LEVELS[0];
-    const currentProgress = Math.min(SKILL_MAX, getModProgress(currentLevel));
-    const nextLevelName = H10_LEVELS[currentLevel] ? H10_LEVELS[currentLevel].name : null;
-
-    setText('#streak-num', state.streak || 0);
-    setText('#xp-num', state.xp || 0);
-
-    const title = document.getElementById('lt-title');
-    const bar = document.getElementById('lt-bar');
-    const next = document.getElementById('lt-next-xp');
-    const list = document.getElementById('lt-levels');
-    if (title) title.textContent = `Level ${currentLevel} — ${currentLevelData.name}`;
-    if (bar) bar.style.width = `${(currentProgress / SKILL_MAX) * 100}%`;
-    if (next) next.textContent = nextLevelName
-      ? `${SKILL_MAX - currentProgress} scenario${SKILL_MAX - currentProgress === 1 ? '' : 's'} to unlock ${nextLevelName}`
-      : `All 10 levels complete`;
-    if (list) {
-      list.innerHTML = '';
-      H10_LEVELS.forEach((lvl, i) => {
-        const el = document.createElement('div');
-        el.className = 'lt-level' + (i + 1 <= currentLevel ? ' active' : '');
-        el.textContent = `${i + 1 <= state.completedLevels.length ? '✓ ' : ''}${i + 1}. ${lvl.name}`;
-        list.appendChild(el);
-      });
-    }
-  };
-
-  window.refreshStaticCopy = function refreshStaticCopy() {
-    document.title = 'Ethics.Ai — Daily AI Ethics Habit System';
-    setText('#why .section-desc', 'Most people use AI every day without a system. Ethics.Ai turns responsible use into a daily habit loop.');
-    setText('#why .stat-card:nth-child(3) .stat-label', 'Complete 10 levels and 100 challenge days to unlock the certificate');
-    setText('#why .stat-card:nth-child(3) .stat-src', 'Habit completion required');
-    setText('#learn .section-title', '10 Levels. 100 Days. One Habit.');
-    setText('#learn .section-desc', 'Each level contains 10 scenario-driven lessons. Complete them in order, build the reflex, and move forward only after the previous level is mastered.');
-    setText('#cert .section-title', 'Certificate by habit, not by one-time completion.');
-    setText('#cert .section-desc', 'Complete all 10 levels and maintain a 100-day challenge to unlock your certificate.');
-    setText('#cert .cert-title-text', 'Certificate of Habit Completion');
-    const courseEl = document.querySelector('#cert .cert-course');
-    if (courseEl) {
-      courseEl.innerHTML = `has successfully completed<br><strong style="color:#F8F6F3">${COURSE_NAME}</strong>`;
-    }
-    const heroMeta = document.getElementById('user-greeting');
-    if (heroMeta) heroMeta.textContent = 'A behavioral learning system for daily AI ethics practice';
-    const cta = document.querySelector('.nav-cta');
-    if (cta) cta.textContent = `Continue Level ${getUnlockedLevel()} →`;
-  };
-
-  window.renderHero = function renderHero() {
-    const heroInner = document.getElementById('hero-inner');
-    if (!heroInner) return;
-    const currentLevel = getUnlockedLevel();
-    const currentLevelData = H10_LEVELS[currentLevel - 1] || H10_LEVELS[0];
-    const levelProgress = Math.min(SKILL_MAX, getModProgress(currentLevel));
-    const levelPct = Math.round((levelProgress / SKILL_MAX) * 100);
-    const isReturning = (state.completedLevels?.length || 0) > 0 || (state.streak || 0) > 1 || (state.completedDays || 0) > 0;
-
-    heroInner.innerHTML = `
-      <div class="hero-left">
-        ${isReturning
-          ? `<div class="hero-badge"><i class="fa-solid fa-fire"></i> Welcome back — ${state.streak || 0} day streak</div>`
-          : `<div class="hero-badge"><i class="fa-solid fa-shield-halved"></i> Daily habit system · Google login`}
-        <h1 class="hero-title">Ethics<span class="accent">.</span>Ai</h1>
-        <p class="hero-tagline">Behavioral AI ethics training — not a static knowledge page.</p>
-        <p class="hero-desc">Build the reflex to <strong>pause, verify, and choose responsibly</strong>. Progress through 10 levels, complete 100 daily challenges, and unlock your certificate only through consistent use.</p>
-        <div class="hero-btns">
-          <a href="#learn" class="btn-primary"><i class="fa-solid fa-arrow-right"></i> Continue Level ${currentLevel}</a>
-          <a href="#cert" class="btn-outline"><i class="fa-solid fa-certificate"></i> View certificate path</a>
-        </div>
-      </div>
-      <div class="hero-return">
-        <div class="hero-return-greeting">Your dashboard</div>
-        <div class="hero-return-status">
-          <div class="hero-return-xp"><div class="xp-big">${state.streak || 0}</div><div class="xp-lbl">day streak</div></div>
-          <div class="hero-return-divider"></div>
-          <div class="hero-return-xp"><div class="xp-big">${state.xp || 0}</div><div class="xp-lbl">XP</div></div>
-          <div class="hero-return-divider"></div>
-          <div class="hero-return-xp"><div class="xp-big">${currentLevel}/10</div><div class="xp-lbl">levels</div></div>
-        </div>
-        <div class="hero-return-today">
-          <div class="hrt-icon">📆</div>
-          <div class="hrt-info">
-            <div class="hrt-label">100-Day Challenge</div>
-            <div class="hrt-kw">Day ${state.dailyChallengeDay || 1} of 100</div>
-            <div class="hrt-meta">Complete one meaningful action daily to keep the habit alive.</div>
-          </div>
-        </div>
-        <div class="hero-return-prog">
-          <div class="hrp-label">Level ${currentLevel} progress</div>
-          <div class="hrp-bar-wrap"><div class="hrp-bar" style="width:${levelPct}%"></div></div>
-          <div class="hrp-pct">${levelProgress}/${SKILL_MAX} scenarios</div>
-        </div>
-        <div class="hero-return-today" style="background:var(--blue-bg);border-color:#BFDBFE;">
-          <div class="hrt-icon">${currentLevelData.subtitle.includes('Pause') ? '🧭' : '💡'}</div>
-          <div class="hrt-info">
-            <div class="hrt-label">Next focus</div>
-            <div class="hrt-kw">${currentLevelData.subtitle}</div>
-            <div class="hrt-meta">${currentLevelData.desc}</div>
-          </div>
-        </div>
-      </div>`;
-    refreshStaticCopy();
-  };
-
-  window.renderModules = function renderModules() {
-    const container = document.getElementById('modules-list');
-    if (!container) return;
-    syncHierarchy();
-    container.innerHTML = '';
-    HABIT_MODULES.forEach(mod => {
-      const done = isModDone(mod.id);
-      const prog = getModProgress(mod.id);
-      const unlocked = mod.id <= getUnlockedLevel();
-      const div = document.createElement('div');
-      div.className = 'module-wrap' + (done ? ' done' : '');
-      div.id = 'mod-wrap-' + mod.id;
-      div.style.opacity = unlocked ? '1' : '0.78';
-      div.innerHTML = `
-        <div class="module-header" onclick="toggleMod(${mod.id})" role="button" tabindex="0" aria-expanded="false">
-          <div class="mod-num" id="mnum-${mod.id}">${done ? '<i class="fa-solid fa-check"></i>' : mod.id}</div>
-          <div class="mod-info"><div class="mod-title">${mod.title}</div><div class="mod-meta">${mod.meta}</div></div>
-          <div class="mod-status">
-            <div class="mod-kw-progress"><span id="mkw-${mod.id}">${prog}</span>/10 scenarios</div>
-            <div class="mod-badge" id="mbadge-${mod.id}">${done ? '✓ Complete' : (unlocked ? 'Start' : 'Locked')}</div>
-            <i class="fa-solid fa-chevron-right mod-arrow"></i>
-          </div>
-        </div>
-        <div class="module-body" id="mbody-${mod.id}">
-          <div class="mod-desc">${mod.desc}</div>
-          <div class="mod-prog-bar-wrap">
-            <div class="mod-prog-label">Level progress</div>
-            <div class="mod-prog-bar-bg"><div class="mod-prog-bar" id="mpbar-${mod.id}" style="width:${(prog / SKILL_MAX) * 100}%"></div></div>
-            <div class="mod-prog-pct" id="mppct-${mod.id}">${prog}/10</div>
-          </div>
-          <div class="kw-grid" id="kwgrid-${mod.id}"></div>
-        </div>`;
-      container.appendChild(div);
-      renderKwTiles(mod.id);
-      if (done) {
-        div.classList.add('done');
-        setText('#mkw-' + mod.id, SKILL_MAX);
-      }
-    });
-    updateOverallProgress();
-  };
-
-  window.renderKwTiles = function renderKwTiles(mid) {
-    const mod = HABIT_MODULES.find(m => m.id === mid);
-    const grid = document.getElementById('kwgrid-' + mid);
-    if (!mod || !grid) return;
-    grid.innerHTML = '';
-    const dueKws = getReviewDueKeywords();
-    mod.keywords.forEach((kw, idx) => {
-      const steps = getKwSteps(kw.id);
-      const done = steps >= 3;
-      const isDue = dueKws.includes(kw.id);
-      const tile = document.createElement('div');
-      tile.className = 'kw-tile' + (done ? ' done' : '') + (isDue ? ' review-due' : '');
-      tile.id = 'kwtile-' + kw.id;
-      tile.onclick = () => openLesson(kw.id, mid, idx);
-      tile.innerHTML = `
-        <div class="kw-icon">${kw.icon}</div>
-        <div class="kw-name">${kw.label}</div>
-        <div class="kw-dots">
-          <div class="kw-dot ${steps >= 1 ? 'done' : ''}"></div>
-          <div class="kw-dot ${steps >= 2 ? 'done' : ''}"></div>
-          <div class="kw-dot ${steps >= 3 ? 'done' : ''}"></div>
-        </div>`;
-      grid.appendChild(tile);
-    });
-  };
-
-  window.toggleMod = function toggleMod(mid) {
-    const unlockedLevel = getUnlockedLevel();
-    if (mid > unlockedLevel) {
-      toast(`Level ${mid} unlocks after you complete Level ${unlockedLevel}.`);
-      return;
-    }
-    const wrap = document.getElementById('mod-wrap-' + mid);
-    const body = document.getElementById('mbody-' + mid);
-    if (!wrap || !body) return;
-    const isOpen = body.classList.contains('open');
-    document.querySelectorAll('.module-body').forEach(b => b.classList.remove('open'));
-    document.querySelectorAll('.module-wrap').forEach(w => w.classList.remove('open'));
-    document.querySelectorAll('.module-header').forEach(h => h.setAttribute('aria-expanded', 'false'));
-    if (!isOpen) {
-      body.classList.add('open');
-      wrap.classList.add('open');
-      const header = wrap.querySelector('.module-header');
-      if (header) header.setAttribute('aria-expanded', 'true');
-      renderKwTiles(mid);
-    }
-  };
-
-  window.openLesson = function openLesson(kwId, mid, idx) {
-    if (mid > getUnlockedLevel()) {
-      toast(`Finish Level ${getUnlockedLevel()} to unlock this one.`);
-      return;
-    }
-    const mod = HABIT_MODULES.find(m => m.id === mid);
-    const unlocked = mod && mid <= getUnlockedLevel();
-    if (!unlocked) return;
-    currentLesson = { kwId, mid, idx };
-    currentStep = 0;
-    cardFlipped = false;
-    checkAnswered = false;
-    window.currentLesson = currentLesson;
-    const lesson = buildLessonFromKwId(kwId);
-    setText('#lesson-breadcrumb', lesson.breadcrumb);
-    renderLessonStep(0);
-    document.getElementById('lesson-overlay').classList.add('open');
-    document.body.style.overflow = 'hidden';
-  };
-
-  window.closeLesson = function closeLesson() {
-    document.getElementById('lesson-overlay').classList.remove('open');
-    document.body.style.overflow = '';
-    currentLesson = null;
-    window.currentLesson = null;
-  };
-
-  window.handleOverlayClick = function handleOverlayClick(e) {
-    if (e.target === document.getElementById('lesson-overlay')) closeLesson();
-  };
-
-  window.updateStepDots = function updateStepDots(step) {
-    for (let i = 1; i <= 3; i++) {
-      const d = document.getElementById('lsd-' + i);
-      if (!d) continue;
-      if (i - 1 < step) d.className = 'lsd done';
-      else if (i - 1 === step) d.className = 'lsd active';
-      else d.className = 'lsd';
-    }
-  };
-
-  window.flipCard = function flipCard() {
-    cardFlipped = !cardFlipped;
-    const el = document.getElementById('flashcard');
-    if (el) el.classList.toggle('flipped', cardFlipped);
-  };
-
-  window.chooseLessonAnswer = function chooseLessonAnswer(idx) {
-    if (!currentLesson) return;
-    const lesson = buildLessonFromKwId(currentLesson.kwId);
-    const opts = document.getElementById('lesson-check-opts');
-    const fb = document.getElementById('lesson-feedback');
-    const nextBtn = document.getElementById('lesson-btn');
-    if (!opts || !fb || !nextBtn) return;
-    const buttons = opts.querySelectorAll('.check-option');
-    buttons.forEach((btn, i) => {
-      if (i === lesson.check.ans) btn.classList.add('correct');
-      if (i === idx && idx !== lesson.check.ans) btn.classList.add('wrong');
-    });
-
-    if (idx === lesson.check.ans) {
-      checkAnswered = true;
-      buttons.forEach(btn => btn.disabled = true);
-      fb.className = 'check-feedback show ok';
-      fb.textContent = lesson.check.exp;
-      nextBtn.disabled = false;
-      toast('Good judgment. This is the safer move.');
-    } else {
-      checkAnswered = false;
-      fb.className = 'check-feedback show bad';
-      fb.textContent = 'Not yet. Re-read the situation and choose the safer response.';
-      nextBtn.disabled = true;
-      toast('Try again. Safer judgment beats speed.');
-    }
-  };
-
-  window.renderLessonStep = function renderLessonStep(step) {
-    if (!currentLesson) return;
-    const lesson = buildLessonFromKwId(currentLesson.kwId);
-    const body = document.getElementById('lesson-body');
-    const btn = document.getElementById('lesson-btn');
-    const footerLeft = document.getElementById('lesson-footer-left');
-    if (!body || !btn || !footerLeft) return;
-    updateStepDots(step);
-    currentStep = step;
-    cardFlipped = false;
-    if (step === 0) {
-      body.innerHTML = `
-        <div class="step-label"><i class="fa-solid fa-layer-group"></i> Step 1 of 3 — Pause</div>
-        <div class="flashcard-wrap" onclick="flipCard()">
-          <div class="flashcard" id="flashcard">
-            <div class="card-face card-front">
-              <div class="cf-emoji">${lesson.flashcard.emoji}</div>
-              <div class="cf-question">${lesson.flashcard.question}</div>
-              <div class="cf-hint"><i class="fa-regular fa-hand-pointer"></i> Tap the card to flip</div>
-            </div>
-            <div class="card-face card-back">
-              <div class="cb-title">${lesson.flashcard.backTitle}</div>
-              <div class="cb-text">${lesson.flashcard.backText}</div>
-            </div>
-          </div>
-        </div>
-        <div class="flip-hint-bar"><i class="fa-solid fa-brain"></i> Pause first, then continue.</div>`;
-      btn.innerHTML = 'Next: See the scenario <i class="fa-solid fa-arrow-right"></i>';
-      btn.className = 'btn-lesson-next';
-      btn.disabled = false;
-      footerLeft.textContent = `Level ${lesson.mid}/10 · Scenario ${lesson.idx}/10`;
-      btn.onclick = () => window.lessonNext();
-    } else if (step === 1) {
-      body.innerHTML = `
-        <div class="step-label"><i class="fa-solid fa-eye"></i> Step 2 of 3 — Observe</div>
-        <div class="example-story">${lesson.example}</div>
-        <div class="diag-do-dont">
-          <div class="diag-do">
-            <div class="diag-do-title">Do</div>
-            <div class="diag-list"><div class="diag-list-item"><i class="fa-solid fa-circle-check"></i> ${lesson.doText}</div></div>
-          </div>
-          <div class="diag-dont">
-            <div class="diag-dont-title">Do not</div>
-            <div class="diag-list"><div class="diag-list-item"><i class="fa-solid fa-circle-xmark"></i> ${lesson.dontText}</div></div>
-          </div>
-        </div>`;
-      btn.innerHTML = 'Next: Make your choice <i class="fa-solid fa-arrow-right"></i>';
-      btn.className = 'btn-lesson-next';
-      btn.disabled = false;
-      footerLeft.textContent = `Observe the pattern before deciding.`;
-      btn.onclick = () => window.lessonNext();
-    } else {
-      body.innerHTML = `
-        <div class="step-label"><i class="fa-solid fa-bullseye"></i> Step 3 of 3 — Decide</div>
-        <div class="check-q">${lesson.check.q}</div>
-        <div class="check-options" id="lesson-check-opts"></div>
-        <div class="check-feedback" id="lesson-feedback"></div>`;
-      const opts = document.getElementById('lesson-check-opts');
-      const letters = ['A', 'B', 'C'];
-      lesson.check.opts.forEach((opt, i) => {
-        const btnOpt = document.createElement('button');
-        btnOpt.className = 'check-option';
-        btnOpt.innerHTML = `<span class="co-letter">${letters[i]}</span>${opt}`;
-        btnOpt.onclick = () => window.chooseLessonAnswer(i);
-        opts.appendChild(btnOpt);
-      });
-      btn.innerHTML = 'Choose the safest answer';
-      btn.className = 'btn-lesson-next';
-      btn.disabled = true;
-      footerLeft.textContent = `Answer correctly to complete this scenario.`;
-      btn.onclick = () => window.lessonNext();
-    }
-  };
-
-  window.lessonNext = function lessonNext() {
-    if (!currentLesson) return;
-    if (currentStep < 2) {
-      renderLessonStep(currentStep + 1);
-      return;
-    }
-    if (!checkAnswered) {
-      toast('Pick the safest answer first.');
-      return;
-    }
-    const { kwId, mid } = currentLesson;
-    const alreadyDone = isKwDone(kwId);
-    if (!alreadyDone) {
-      setKwSteps(kwId, 3);
-      state.kwDates[kwId] = Date.now();
-      state.moduleProgress[mid] = getModProgress(mid);
-      addXP(XP_VALUES.scenario, 'scenario complete');
-    } else {
-      state.kwDates[kwId] = Date.now();
-      addXP(XP_VALUES.review, 'scenario reviewed');
-    }
-    saveState();
-    renderKwTiles(mid);
-    updateModProgress(mid);
-    renderReviewNudge();
-    closeLesson();
-    if (!alreadyDone) toast('✅ Scenario completed');
-  };
-
-  window.updateModProgress = function updateModProgress(mid) {
-    const prog = getModProgress(mid);
-    const done = prog >= SKILL_MAX;
-    const wrap = document.getElementById('mod-wrap-' + mid);
-    const badge = document.getElementById('mbadge-' + mid);
-    const mnum = document.getElementById('mnum-' + mid);
-    const pbar = document.getElementById('mpbar-' + mid);
-    const ppct = document.getElementById('mppct-' + mid);
-    const mkw = document.getElementById('mkw-' + mid);
-    if (mkw) mkw.textContent = prog;
-    if (pbar) pbar.style.width = `${(prog / SKILL_MAX) * 100}%`;
-    if (ppct) ppct.textContent = `${prog}/10`;
-
-    state.moduleProgress[mid] = prog;
-    if (done && !state.completedLevels.includes(mid)) {
-      state.completedLevels.push(mid);
-      state.completedLevels.sort((a, b) => a - b);
-      state.modules = [...state.completedLevels];
-      state.currentLevel = Math.min(SKILL_MAX, state.completedLevels.length + 1);
-      if (wrap) wrap.classList.add('done');
-      if (badge) badge.textContent = '✓ Complete';
-      if (mnum) mnum.innerHTML = '<i class="fa-solid fa-check"></i>';
-      addXP(XP_VALUES.module, `Level ${mid} complete`);
-      showCompletionOverlay(mid);
-      toast(`🎉 Level ${mid} complete`);
-    }
-    state.levelProgress = getModProgress(getUnlockedLevel()) / SKILL_MAX;
-    syncHierarchy();
-    updateOverallProgress();
-    updateNavXP();
-    updateCertRequirements();
-    saveState();
-  };
-
-  window.updateOverallProgress = function updateOverallProgress() {
-    const done = state.completedLevels.length || 0;
-    const bar = document.getElementById('lp-bar');
-    const count = document.getElementById('lp-count');
-    if (bar) bar.style.width = `${(done / SKILL_MAX) * 100}%`;
-    if (count) count.textContent = `${done}/10 levels complete`;
-  };
-
-  window.showCompletionOverlay = function showCompletionOverlay(mid) {
-    const mod = HABIT_MODULES.find(m => m.id === mid);
-    const nextMod = HABIT_MODULES.find(m => m.id === mid + 1);
-    const badges = ['🌱', '🪄', '⚖️', '🔒', '👁️', '🎯', '🧭', '🛡️', '📵', '🏆'];
-    setText('#co-badge', badges[mid - 1] || '🏆');
-    setText('#co-title', `Level ${mid} Complete!`);
-    setText('#co-sub', `You completed all 10 scenarios in ${mod ? mod.title : 'this level'}.`);
-    setText('#co-xp', `+${XP_VALUES.module} XP`);
-    setHTML('#co-what', `<strong>What changed:</strong> You practiced a repeatable safety habit — pause, inspect, verify, and act deliberately.`);
-    setHTML('#co-next', nextMod
-      ? `<strong>Next:</strong> ${nextMod.title} is now available. Keep the streak alive and continue the climb.`
-      : `<strong>Next:</strong> You are at the final level. Finish the 100-day challenge to unlock the certificate.`);
-    const nextBtn = document.getElementById('co-next-btn');
-    if (nextBtn) nextBtn.textContent = nextMod ? 'Continue to next level' : 'Finish challenge';
-    document.getElementById('completion-overlay').classList.add('open');
-    document.body.style.overflow = 'hidden';
-    if (mid === SKILL_MAX && isCertificateUnlocked()) {
-      fireConfetti();
-    }
-  };
-
-  window.closeCompletion = function closeCompletion() {
-    document.getElementById('completion-overlay').classList.remove('open');
-    document.body.style.overflow = '';
-  };
-
-  window.updateCertRequirements = function updateCertRequirements() {
-    syncHierarchy();
-    const levelsDone = state.completedLevels.length || 0;
-    const daysDone = state.completedDays || 0;
-    const locked = !isCertificateUnlocked();
-    const modIcon = document.getElementById('cr-mod-icon');
-    const modText = document.getElementById('cr-mod-text');
-    const quizIcon = document.getElementById('cr-quiz-icon');
-    const quizText = document.getElementById('cr-quiz-text');
-    const msg = document.getElementById('cert-locked-msg');
-    const form = document.getElementById('cert-form-inner');
-    if (modIcon) modIcon.innerHTML = levelsDone >= SKILL_MAX ? '<i class="fa-solid fa-circle-check ok"></i>' : '<i class="fa-solid fa-lock lock"></i>';
-    if (modText) modText.innerHTML = `Complete all 10 levels (<span id="cr-mod-count">${levelsDone}</span>/10)`;
-    if (quizIcon) quizIcon.innerHTML = daysDone >= CHALLENGE_MAX ? '<i class="fa-solid fa-circle-check ok"></i>' : '<i class="fa-solid fa-lock lock"></i>';
-    if (quizText) quizText.textContent = `Complete the 100-day challenge (${daysDone}/100)`;
-    if (msg) msg.innerHTML = locked
-      ? `<i class="fa-solid fa-lock"></i> Finish 10 levels and a 100-day challenge to unlock your certificate.`
-      : `<i class="fa-solid fa-badge-check"></i> Certificate unlocked. Enter your details to generate it.`;
-    if (form) form.style.display = locked ? 'none' : 'block';
-    state.certificateUnlocked = !locked;
-  };
-
-  window.isCertificateUnlocked = function isCertificateUnlocked() {
-    if (isAdminMode()) return true;
-    return (state.completedLevels?.length || 0) >= SKILL_MAX && (state.completedDays || 0) >= CHALLENGE_MAX;
-  };
-
-  window.generateCert = function generateCert() {
-    if (!isCertificateUnlocked()) {
-      toast('Complete 10 levels and 100 days first.');
-      return;
-    }
-    const name = document.getElementById('cert-name').value.trim();
-    const email = document.getElementById('cert-email').value.trim();
-    if (!name) { toast('⚠️ Please enter your name'); return; }
-    if (!email || !email.includes('@')) { toast('⚠️ Please enter a valid email'); return; }
-    state.certGenerated = true;
-    state.certificateUnlocked = true;
-    state.certName = name;
-    saveState();
-    setText('#cert-name-display', name);
-    const now = new Date();
-    setText('#cert-date-display', 'Issued ' + now.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }));
-    const actions = document.getElementById('cert-actions');
-    if (actions) actions.style.display = 'flex';
-    toast('🎓 Certificate generated!', 3500);
-  };
-
-  window.shareText = function shareText() {
-    return `🎓 I completed the Ethics.Ai habit system — 10 levels, 100 days, and a certificate earned through daily practice.\n\nI now use AI more responsibly, deliberately, and ethically.`;
-  };
-
-  window.shareLinkedIn = function shareLinkedIn() {
-    window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent('https://ethics.ai') + '&summary=' + encodeURIComponent(shareText()), '_blank');
-  };
-  window.shareWhatsApp = function shareWhatsApp() {
-    window.open('https://wa.me/?text=' + encodeURIComponent(shareText() + '\n\nLearn at: https://ethics.ai'), '_blank');
-  };
-  window.shareInstagram = function shareInstagram() {
-    navigator.clipboard?.writeText(shareText()).catch(() => {});
-    toast('📋 Caption copied! Open Instagram and paste.', 3000);
-  };
-
-  window.setAdminMode = function setAdminMode(enabled) {
-    try { localStorage.setItem('ethicsai_admin_mode', enabled ? '1' : '0'); } catch (_) {}
-    state.adminMode = !!enabled;
-    if (enabled) {
-      state.certificateUnlocked = true;
-      state.currentLevel = SKILL_MAX;
-    } else {
-      state.certificateUnlocked = isCertificateUnlocked();
-    }
-    saveState();
-    syncHierarchy();
-    renderHero();
-    renderModules();
-    updateCertRequirements();
-    updateNavXP();
-    toast(enabled ? '🛠️ Admin mode enabled' : '🧩 Admin mode disabled', 2200);
-  };
-
-  window.toggleAdminPanel = function toggleAdminPanel(force) {
-    if (typeof force === 'boolean') {
-      if (force) openAdminPanel(); else closeAdminPanel();
-    } else {
-      const panel = document.getElementById('admin-panel');
-      if (!panel) return;
-      if (panel.classList.contains('open')) closeAdminPanel(); else openAdminPanel();
-    }
-  };
-
-  window.adminUnlockAllLevels = function adminUnlockAllLevels() {
-    window.setAdminMode(true);
-    state.completedLevels = Array.from({ length: SKILL_MAX }, (_, i) => i + 1);
-    state.modules = [...state.completedLevels];
-    state.currentLevel = SKILL_MAX;
-    state.levelProgress = 1;
-    state.certificateUnlocked = true;
-    saveState();
-    renderHero();
-    renderModules();
-    updateCertRequirements();
-    toast('🔓 All levels unlocked locally');
-  };
-
-  window.adminResetMode = function adminResetMode() {
-    try { localStorage.removeItem('ethicsai_admin_mode'); } catch (_) {}
-    state.adminMode = false;
-    syncHierarchy();
-    renderHero();
-    renderModules();
-    updateCertRequirements();
-    updateNavXP();
-    syncAdminUI();
-    toast('✅ Admin mode reset', 2200);
-  };
-
-  window.handleLogin = function handleLogin() {
-    if (!auth) {
-      console.error('Auth is not ready yet.');
-      return;
-    }
-    const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider).catch((error) => {
-      console.error('Login failed:', error);
-    });
-  };
-
-  window.initAppAfterLogin = function initAppAfterLogin() {
-    syncHierarchy();
-    setInsight();
-    markDailyProgress();
-    refreshStaticCopy();
-    init();
-    updateNavXP();
-    updateStreak();
-    syncAdminUI();
-  };
-
-  window.init = function init() {
-    syncHierarchy();
-    refreshStaticCopy();
-    setInsight();
-    renderHero();
-    renderModules();
-    updateStreak();
-    updateOverallProgress();
-    updateCertRequirements();
-    renderQuiz();
-    updateNavXP();
-    renderReviewNudge();
-    syncAdminUI();
-    if (typeof obs !== 'undefined') {
-      document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
-    }
-  };
-
-  // Re-render once the page is hydrated.
-  if (document.readyState !== 'loading') {
-    refreshStaticCopy();
-    syncAdminUI();
-  }
-})();
-</script>
-
 </body>
 </html>
+
